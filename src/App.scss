@@ -1,0 +1,918 @@
+/* ── Reset ───────────────────────────────────────────────────────── */
+@use '@carbon/react/scss/spacing' as *;
+@use '@carbon/react/scss/theme' as *;
+@use '@carbon/react/scss/type' as *;
+@use '@carbon/react/scss/breakpoint' as *;
+
+$dur-fast: 110ms;
+$dur-med:  240ms;
+
+/* ── Root ────────────────────────────────────────────────────────── */
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  background: $background;
+}
+
+/* ── Shell: header + body row ────────────────────────────────────── */
+.clm-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* push page below fixed Carbon Header (48px) */
+.clm-body {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+  padding-top: 48px;
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   CHAT COLUMN
+   ───────────────────────────────────────────────────────────────── */
+.clm-chat-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  /* smooth width transition when panel opens/closes */
+  transition: flex $dur-med ease;
+}
+
+/* scrollable message thread */
+.clm-thread {
+  flex: 1;
+  overflow-y: auto;
+  padding: $spacing-07 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* inner centering wrapper — max 720px like Gemini */
+.clm-thread-inner {
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 $spacing-06;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-05;
+}
+
+/* ── Welcome / empty state ────────────────────────────────────────── */
+.clm-welcome {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: $spacing-11 $spacing-06 $spacing-07;
+  gap: $spacing-05;
+}
+
+.clm-welcome-logo {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0f62fe 0%, #4589ff 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(15, 98, 254, 0.35);
+}
+
+.clm-welcome-title {
+  @include type-style('productive-heading-04');
+  color: $text-primary;
+  margin: 0;
+}
+
+.clm-welcome-sub {
+  @include type-style('body-01');
+  color: $text-secondary;
+  margin: 0;
+  max-width: 480px;
+  line-height: 1.6;
+}
+
+.clm-suggestion-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: $spacing-04;
+  width: 100%;
+  max-width: 580px;
+  margin-top: $spacing-03;
+}
+
+.clm-suggestion-card {
+  background: $layer-01;
+  border: 1px solid $border-subtle-01;
+  padding: $spacing-04 $spacing-05;
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background $dur-fast ease, border-color $dur-fast ease;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-02;
+
+  &:hover {
+    background: $layer-hover-01;
+    border-color: $border-interactive;
+  }
+
+  .card-icon { color: $interactive; }
+  .card-text {
+    @include type-style('body-compact-01');
+    color: $text-primary;
+    line-height: 1.4;
+  }
+}
+
+/* ── Message rows ────────────────────────────────────────────────── */
+.clm-msg {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-02;
+  animation: clm-fade-in 0.2s ease;
+}
+
+@keyframes clm-fade-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* User turn — right-aligned pill */
+.clm-msg.user {
+  align-items: flex-end;
+}
+
+.clm-msg-bubble-user {
+  background: $interactive;
+  color: $text-on-color;
+  padding: $spacing-04 $spacing-05;
+  max-width: 82%;
+  @include type-style('body-compact-01');
+  line-height: 1.55;
+  word-break: break-word;
+  border-radius: 18px 18px 4px 18px;
+}
+
+.clm-file-chip-user {
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-02;
+  background: rgba(255,255,255,0.18);
+  border-radius: 20px;
+  padding: 2px $spacing-03;
+  @include type-style('label-01');
+  color: $text-on-color;
+  margin-bottom: $spacing-02;
+}
+
+/* Assistant turn — full width with avatar */
+.clm-msg.assistant {
+  align-items: flex-start;
+}
+
+.clm-msg-assistant-row {
+  display: flex;
+  align-items: flex-start;
+  gap: $spacing-04;
+  width: 100%;
+}
+
+.clm-msg-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0f62fe, #4589ff);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.clm-msg-body {
+  flex: 1;
+  min-width: 0;
+}
+
+/* plain text response */
+.clm-msg-text {
+  @include type-style('body-compact-01');
+  color: $text-primary;
+  line-height: 1.65;
+  word-break: break-word;
+
+  p { margin: 0 0 $spacing-03; &:last-child { margin-bottom: 0; } }
+  strong { font-weight: 600; }
+}
+
+/* Structured-response summary chip shown inline in chat */
+.clm-msg-structured-chip {
+  background: $layer-01;
+  border: 1px solid $border-subtle-01;
+  border-left: 3px solid $interactive;
+  padding: $spacing-04 $spacing-05;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-03;
+  cursor: pointer;
+  transition: background $dur-fast ease;
+
+  &:hover { background: $layer-hover-01; }
+}
+
+.clm-chip-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: $spacing-03;
+}
+
+.clm-chip-title {
+  @include type-style('body-compact-02');
+  font-weight: 600;
+  color: $text-primary;
+}
+
+.clm-chip-meta {
+  @include type-style('label-01');
+  color: $text-secondary;
+}
+
+.clm-chip-counts {
+  display: flex;
+  gap: $spacing-04;
+}
+
+.clm-chip-count {
+  @include type-style('label-01');
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: $spacing-02;
+
+  &.red   { color: #da1e28; }
+  &.amber { color: #b45309; }
+  &.green { color: #24a148; }
+}
+
+.clm-chip-cta {
+  @include type-style('label-01');
+  color: $link-primary;
+  display: flex;
+  align-items: center;
+  gap: $spacing-02;
+}
+
+/* Typing indicator */
+.clm-typing {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  padding: $spacing-02 0;
+}
+
+.clm-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: $interactive;
+  animation: clm-bounce 1.2s ease infinite;
+
+  &:nth-child(2) { animation-delay: 0.2s; }
+  &:nth-child(3) { animation-delay: 0.4s; }
+}
+
+@keyframes clm-bounce {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+  30%           { transform: translateY(-5px); opacity: 1; }
+}
+
+/* message timestamp */
+.clm-msg-time {
+  @include type-style('label-01');
+  color: $text-secondary;
+  padding-left: 40px; /* align with avatar offset */
+}
+
+.clm-msg.user .clm-msg-time {
+  padding-left: 0;
+  text-align: right;
+}
+
+/* ── Input bar — pinned bottom ────────────────────────────────────── */
+.clm-input-bar {
+  flex-shrink: 0;
+  background: $background;
+  padding: $spacing-05 $spacing-06 $spacing-07;
+}
+
+.clm-input-inner {
+  max-width: 720px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-04;
+}
+
+/* The main rounded input card */
+.clm-input-card {
+  background: $layer-01;
+  border: 1px solid $border-strong-01;
+  border-radius: 16px;
+  padding: $spacing-04 $spacing-04 $spacing-04 $spacing-06;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-03;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  transition: border-color $dur-fast ease, box-shadow $dur-fast ease;
+
+  &:focus-within {
+    border-color: $focus;
+    box-shadow: 0 0 0 2px $focus, 0 2px 12px rgba(0, 0, 0, 0.08);
+  }
+}
+
+/* File attachment chip shown inside the card */
+.clm-input-file-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-02;
+  background: $highlight;
+  border: 1px solid $border-interactive;
+  border-radius: 20px;
+  padding: $spacing-01 $spacing-04;
+  @include type-style('label-01');
+  color: $interactive;
+  font-weight: 600;
+  width: fit-content;
+
+  button {
+    display: flex;
+    align-items: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    color: $interactive;
+    margin-left: $spacing-01;
+    opacity: 0.7;
+    &:hover { opacity: 1; }
+  }
+}
+
+.clm-textarea {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  resize: none;
+  @include type-style('body-01');
+  color: $text-primary;
+  font-family: inherit;
+  line-height: 1.6;
+  min-height: 28px;
+  max-height: 180px;
+  overflow-y: auto;
+  padding: 0;
+  width: 100%;
+
+  &::placeholder { color: $text-placeholder; }
+  &:disabled { cursor: not-allowed; opacity: 0.5; }
+}
+
+/* Bottom toolbar row inside the card */
+.clm-input-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.clm-input-toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: $spacing-02;
+}
+
+/* Circular icon button for attach */
+.clm-icon-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: $icon-secondary;
+  transition: background $dur-fast ease, color $dur-fast ease;
+
+  &:hover {
+    background: $layer-hover-01;
+    color: $text-primary;
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+/* Send button — filled circle */
+.clm-send-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: $interactive;
+  color: $text-on-color;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background $dur-fast ease, transform $dur-fast ease;
+  box-shadow: 0 2px 6px rgba(15, 98, 254, 0.4);
+
+  &:hover:not(:disabled) {
+    background: #0043ce; /* IBM Blue 70 — standard hover for interactive blue */
+    transform: scale(1.05);
+  }
+
+  &:disabled {
+    background: $border-strong-01;
+    box-shadow: none;
+    cursor: not-allowed;
+    transform: none;
+  }
+}
+
+/* Quick suggestion pills row below the card */
+.clm-suggestion-pills {
+  display: flex;
+  align-items: center;
+  gap: $spacing-03;
+  flex-wrap: wrap;
+}
+
+.clm-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-02;
+  background: $layer-01;
+  border: 1px solid $border-subtle-01;
+  border-radius: 20px;
+  padding: $spacing-02 $spacing-04;
+  cursor: pointer;
+  font-family: inherit;
+  @include type-style('label-01');
+  color: $text-secondary;
+  transition: background $dur-fast ease, border-color $dur-fast ease, color $dur-fast ease;
+  white-space: nowrap;
+
+  &:hover {
+    background: $layer-hover-01;
+    border-color: $border-interactive;
+    color: $text-primary;
+  }
+}
+
+.clm-hint-text {
+  @include type-style('label-01');
+  color: $text-secondary;
+  text-align: center;
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   RISK PANEL (slides in from the right)
+   ───────────────────────────────────────────────────────────────── */
+.clm-panel {
+  width: 0;
+  overflow: hidden;
+  flex-shrink: 0;
+  border-left: none;
+  background: $layer-01;
+  display: flex;
+  flex-direction: column;
+  transition: width $dur-med ease;
+
+  &.open {
+    width: 560px;
+    border-left: 1px solid $border-subtle-01;
+  }
+}
+
+.clm-panel-inner {
+  width: 560px;
+  min-width: 560px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.clm-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-04 $spacing-05;
+  border-bottom: 1px solid $border-subtle-01;
+  background: $layer-02;
+  flex-shrink: 0;
+}
+
+.clm-panel-title {
+  @include type-style('productive-heading-02');
+  color: $text-primary;
+}
+
+.clm-panel-actions {
+  display: flex;
+  align-items: center;
+  gap: $spacing-02;
+}
+
+.clm-panel-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: $spacing-06 $spacing-05;
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   STRUCTURED RESPONSE inside the panel
+   ───────────────────────────────────────────────────────────────── */
+.clm-response {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-06;
+}
+
+.clm-response-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: $spacing-04;
+  padding-bottom: $spacing-05;
+  border-bottom: 1px solid $border-subtle-01;
+}
+
+.clm-response-agent-label {
+  @include type-style('label-01');
+  color: $text-secondary;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: $spacing-02;
+}
+
+.clm-response-title {
+  @include type-style('productive-heading-03');
+  color: $text-primary;
+  margin: 0 0 $spacing-02;
+}
+
+.clm-response-date {
+  @include type-style('label-01');
+  color: $text-secondary;
+}
+
+.clm-overall-risk {
+  display: flex;
+  align-items: center;
+  gap: $spacing-04;
+  padding: $spacing-03 $spacing-04;
+  background: $layer-02;
+  border: 1px solid $border-subtle-01;
+}
+
+.clm-overall-label {
+  @include type-style('label-01');
+  color: $text-secondary;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+
+.clm-section {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-04;
+}
+
+.clm-section-heading {
+  @include type-style('label-01');
+  color: $text-secondary;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding-bottom: $spacing-03;
+  border-bottom: 1px solid $border-subtle-01;
+}
+
+/* summary cards — 3-up grid */
+.clm-summary-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $spacing-04;
+}
+
+.clm-summary-card {
+  padding: $spacing-04;
+  border: 1px solid $border-subtle-01;
+  background: $layer-02;
+}
+
+.clm-summary-card-header {
+  display: flex;
+  align-items: center;
+  gap: $spacing-02;
+  margin-bottom: $spacing-02;
+  @include type-style('label-01');
+  font-weight: 600;
+}
+
+.clm-summary-card-count {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  margin-bottom: $spacing-02;
+}
+
+.clm-summary-card-desc {
+  @include type-style('label-01');
+  color: $text-secondary;
+  line-height: 1.4;
+}
+
+/* top risk items */
+.clm-top-risks {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-03;
+}
+
+.clm-top-risk-item {
+  display: flex;
+  align-items: flex-start;
+  gap: $spacing-04;
+  padding: $spacing-04;
+  background: $layer-02;
+  border-left: 3px solid $support-error;
+  border-top: 1px solid $border-subtle-01;
+  border-right: 1px solid $border-subtle-01;
+  border-bottom: 1px solid $border-subtle-01;
+  @include type-style('body-compact-01');
+  color: $text-primary;
+  line-height: 1.5;
+}
+
+.clm-top-risk-num {
+  min-width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: $support-error;
+  color: $text-on-color;
+  @include type-style('label-01');
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* risk cards */
+.clm-risk-list {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-02;
+}
+
+.clm-risk-card {
+  border: 1px solid $border-subtle-01;
+  background: $layer-02;
+  overflow: hidden;
+
+  &.rag-red    { border-left: 3px solid $support-error; }
+  &.rag-amber  { border-left: 3px solid $support-warning; }
+  &.rag-green  { border-left: 3px solid $support-success; }
+}
+
+.clm-risk-card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: $spacing-03;
+  padding: $spacing-04;
+  cursor: pointer;
+  transition: background $dur-fast ease;
+
+  &:hover { background: $layer-hover-01; }
+}
+
+.clm-risk-meta { flex: 1; min-width: 0; }
+
+.clm-risk-cat {
+  @include type-style('label-01');
+  color: $text-secondary;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: $spacing-01;
+}
+
+.clm-risk-issue {
+  @include type-style('body-compact-01');
+  color: $text-primary;
+  line-height: 1.5;
+}
+
+.clm-risk-ref {
+  @include type-style('label-01');
+  color: $text-secondary;
+  margin-top: $spacing-01;
+  font-style: italic;
+}
+
+.clm-risk-chevron {
+  flex-shrink: 0;
+  color: $icon-secondary;
+  margin-top: 2px;
+  transition: transform $dur-fast ease;
+  &.open { transform: rotate(180deg); }
+}
+
+.clm-risk-detail {
+  padding: $spacing-04;
+  border-top: 1px solid $border-subtle-01;
+  background: $background;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-03;
+}
+
+.clm-detail-row {
+  @include type-style('body-compact-01');
+  line-height: 1.55;
+  color: $text-secondary;
+}
+
+.clm-detail-label {
+  @include type-style('label-01');
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+  margin-right: $spacing-02;
+  &.accent  { color: $support-success; }
+  &.default { color: $text-primary; }
+}
+
+/* pipeline */
+.clm-pipeline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: $spacing-03;
+}
+
+.clm-pipeline-step {
+  background: $layer-02;
+  border: 1px solid $border-subtle-02;
+  padding: $spacing-02 $spacing-04;
+  @include type-style('label-01');
+  color: $text-secondary;
+  font-weight: 600;
+}
+
+.clm-pipeline-arrow {
+  color: $icon-secondary;
+  @include type-style('body-compact-01');
+  flex-shrink: 0;
+}
+
+/* ── Settings drawer ─────────────────────────────────────────────── */
+.clm-settings-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 8000;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.clm-settings-drawer {
+  width: 360px;
+  height: 100%;
+  background: $layer-01;
+  display: flex;
+  flex-direction: column;
+  margin-top: 48px; /* below header */
+  border-left: 1px solid $border-subtle-01;
+}
+
+.clm-settings-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-05 $spacing-06;
+  border-bottom: 1px solid $border-subtle-01;
+  background: $layer-02;
+  @include type-style('productive-heading-02');
+  color: $text-primary;
+}
+
+.clm-settings-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: $spacing-06;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-06;
+}
+
+.clm-settings-section {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-05;
+}
+
+.clm-settings-section-label {
+  @include type-style('label-01');
+  color: $text-secondary;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border-bottom: 1px solid $border-subtle-01;
+  padding-bottom: $spacing-03;
+}
+
+/* session badge */
+.clm-session-badge {
+  @include type-style('label-01');
+  color: $text-secondary;
+  padding: $spacing-03 $spacing-04;
+  background: $layer-02;
+  border: 1px solid $border-subtle-01;
+  word-break: break-all;
+
+  code {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: $text-secondary;
+  }
+}
+
+/* markdown in chat */
+.clm-md {
+  @include type-style('body-compact-01');
+  color: $text-primary;
+  line-height: 1.65;
+
+  p { margin: 0 0 $spacing-03; &:last-child { margin-bottom: 0; } }
+  strong { font-weight: 600; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: $spacing-04 0;
+    font-size: 13px;
+  }
+
+  th {
+    padding: $spacing-02 $spacing-03;
+    background: $layer-02;
+    border-bottom: 2px solid $border-subtle-02;
+    text-align: left;
+    @include type-style('label-01');
+    font-weight: 600;
+    color: $text-secondary;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  td {
+    padding: $spacing-02 $spacing-03;
+    border-bottom: 1px solid $border-subtle-01;
+    vertical-align: top;
+  }
+
+  code {
+    font-family: 'IBM Plex Mono', monospace;
+    background: $layer-02;
+    padding: 1px $spacing-02;
+    font-size: 12px;
+  }
+}
+
+/* ── Scrollbar ─────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: $border-subtle-02; }
+::-webkit-scrollbar-thumb:hover { background: $border-strong-01; }

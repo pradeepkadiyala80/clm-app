@@ -1,0 +1,17 @@
+@use '@carbon/react/scss/themes' as *;
+@use '@carbon/react/scss/theme' with ($theme: $white);
+@use '@carbon/react/scss/reset';
+@use '@carbon/react/scss/components/button';
+@use '@carbon/react/scss/components/text-input';
+@use '@carbon/react/scss/components/form';
+@use '@carbon/react/scss/components/tag';
+@use '@carbon/react/scss/components/tile';
+@use '@carbon/react/scss/components/accordion';
+@use '@carbon/react/scss/components/notification';
+@use '@carbon/react/scss/components/inline-loading';
+@use '@carbon/react/scss/components/loading';
+@use '@carbon/react/scss/components/tooltip';
+@use '@carbon/react/scss/components/ui-shell';
+@use '@carbon/react/scss/grid';
+@use '@carbon/react/scss/type';
+@use '@carbon/react/scss/spacing' as *;

@@ -1,0 +1,3 @@
+/* Global index.css — minimal reset; App.css handles layout */
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; }
