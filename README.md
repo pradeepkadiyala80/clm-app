@@ -45,7 +45,7 @@ The left panel pre-fills the Base URL and Slug. Add your API key:
 |---|---|
 | **Agent Base URL** | `http://ibm-techxchange.sirioncloud.io:8000` |
 | **Agent Slug** | `trade-finance-risk-analyzer-1-1` |
-| **API Key** | `sk_MpBNYmMNpfpdrLaUZb13a1Du3omTXb0p` |
+| **API Key** | `sk*************` |
 
 Use the **show/hide eye button** on the API Key field to reveal the key.
 
