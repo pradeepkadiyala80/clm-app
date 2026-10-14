@@ -41,7 +41,7 @@ export function StructuredResponse({ data }: Props) {
       {/* ── Header ──────────────────────────────────────────────── */}
       <div className="clm-response-header">
         <div>
-          <p className="clm-response-agent-label">Trade Finance Contract Risk Agent</p>
+          <p className="clm-response-agent-label">IBMSirion Vault · AI Risk Assessment</p>
           <h2 className="clm-response-title">
             {payload.contract_name ?? 'Trade Finance Contract Risk Review'}
           </h2>

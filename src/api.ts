@@ -26,7 +26,10 @@ export async function uploadFile(config: AgentConfig, file: File): Promise<strin
 
   const data = await res.json();
   if (!data.id) throw new Error('Upload succeeded but no file ID was returned.');
-  return data.id as string;
+  // Return all chunk IDs joined so sendMessage can attach each one
+  return data.ids && data.ids.length > 1
+    ? (data.ids as string[]).join(',')
+    : data.id as string;
 }
 
 export async function sendMessage(
@@ -36,13 +39,14 @@ export async function sendMessage(
   fileId?: string
 ): Promise<string> {
   // Build message payload — attach file to last user message if provided
+  const fileIds = fileId ? fileId.split(',') : [];
   const payload = messages.map((m, idx) => {
-    if (fileId && idx === messages.length - 1 && m.role === 'user') {
+    if (fileIds.length > 0 && idx === messages.length - 1 && m.role === 'user') {
       return {
         role: m.role,
         content: [
           { type: 'text', text: m.content },
-          { type: 'file', file: { file_id: fileId } },
+          ...fileIds.map(id => ({ type: 'file', file: { file_id: id } })),
         ],
       };
     }
