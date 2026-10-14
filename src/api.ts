@@ -4,8 +4,18 @@ import type { AgentConfig, Message } from './types';
 // Chat:        POST /agentos/api/chat-agents/{slug}/chat/completions
 // File upload: POST /agentos/api/files/upload
 
+// If the app is served over HTTPS but the configured URL is plain HTTP,
+// upgrade it automatically to avoid a browser mixed-content block.
+function safeBase(url: string): string {
+  const stripped = url.replace(/\/$/, '');
+  if (typeof window !== 'undefined' && window.location.protocol === 'https:') {
+    return stripped.replace(/^http:\/\//i, 'https://');
+  }
+  return stripped;
+}
+
 export async function uploadFile(config: AgentConfig, file: File): Promise<string> {
-  const base = config.baseUrl.replace(/\/$/, '');
+  const base = safeBase(config.baseUrl);
   const url = `${base}/agentos/api/files/upload`;
 
   const form = new FormData();
@@ -33,7 +43,7 @@ export async function sendMessage(
   sessionId: string,
   fileId?: string
 ): Promise<string> {
-  const base = config.baseUrl.replace(/\/$/, '');
+  const base = safeBase(config.baseUrl);
   const url = `${base}/agentos/api/chat-agents/${config.agentSlug}/chat/completions`;
 
   // Build message payload — attach file to last user message if provided
