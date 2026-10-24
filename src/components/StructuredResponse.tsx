@@ -41,7 +41,7 @@ export function StructuredResponse({ data }: Props) {
       {/* ── Header ──────────────────────────────────────────────── */}
       <div className="clm-response-header">
         <div>
-          <p className="clm-response-agent-label">Trade Finance Contract Risk Agent</p>
+          <p className="clm-response-agent-label">IBMSirion Vault · AI Risk Assessment</p>
           <h2 className="clm-response-title">
             {payload.contract_name ?? 'Trade Finance Contract Risk Review'}
           </h2>
@@ -70,14 +70,14 @@ export function StructuredResponse({ data }: Props) {
       </div>
 
       {/* ── Top Risks ───────────────────────────────────────────── */}
-      {payload.top_risks.length > 0 && (
+      {payload.top_risks.filter(Boolean).length > 0 && (
         <div className="clm-section">
           <p className="clm-section-heading">Top Risks Requiring Attention</p>
           <div className="clm-top-risks">
-            {payload.top_risks.slice(0, 3).map((risk, i) => (
+            {payload.top_risks.filter(Boolean).slice(0, 3).map((risk, i) => (
               <div key={i} className="clm-top-risk-item">
                 <span className="clm-top-risk-num">{i + 1}</span>
-                {risk}
+                <span>{risk}</span>
               </div>
             ))}
           </div>
@@ -117,7 +117,17 @@ export function StructuredResponse({ data }: Props) {
 // ── Expandable risk card ──────────────────────────────────────────────────────
 function RiskCard({ risk }: { risk: RiskItem }) {
   const [open, setOpen] = useState(false);
-  const hasDetail = risk.what || risk.why || risk.suggested_action || risk.potential_impact;
+  const displayIssue = risk.risk_issue && risk.risk_issue !== risk.risk_category
+    ? risk.risk_issue
+    : (risk.what || risk.why || risk.risk_issue || '');
+
+  const hasDetail = !!(
+    (risk.what && risk.what !== displayIssue) ||
+    risk.why ||
+    risk.suggested_action ||
+    risk.potential_impact ||
+    risk.impact
+  );
 
   return (
     <div className={`clm-risk-card rag-${risk.rag.toLowerCase()}`}>
@@ -133,8 +143,8 @@ function RiskCard({ risk }: { risk: RiskItem }) {
           {RAG_LABEL[risk.rag]}
         </Tag>
         <div className="clm-risk-meta">
-          <p className="clm-risk-cat">{risk.risk_category}</p>
-          <p className="clm-risk-issue">{risk.risk_issue}</p>
+          <p className="clm-risk-cat">{risk.risk_category || 'Contract Risk'}</p>
+          {displayIssue && <p className="clm-risk-issue">{displayIssue}</p>}
           {risk.contract_reference && (
             <p className="clm-risk-ref">{risk.contract_reference}</p>
           )}
@@ -148,14 +158,14 @@ function RiskCard({ risk }: { risk: RiskItem }) {
 
       {open && hasDetail && (
         <div className="clm-risk-detail">
-          {risk.what && (
+          {risk.what && risk.what !== displayIssue && (
             <DetailRow label="What" value={risk.what} />
           )}
           {risk.why && (
             <DetailRow label="Why it matters" value={risk.why} />
           )}
-          {risk.potential_impact && (
-            <DetailRow label="Potential impact" value={risk.potential_impact} />
+          {(risk.potential_impact || risk.impact) && (
+            <DetailRow label="Potential impact" value={risk.potential_impact || risk.impact!} />
           )}
           {risk.suggested_action && (
             <DetailRow label="Suggested action" value={risk.suggested_action} accent />

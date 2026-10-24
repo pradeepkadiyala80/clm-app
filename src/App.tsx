@@ -16,9 +16,9 @@ import './carbon.scss';
 import './App.scss';
 
 const INITIAL_CONFIG: AgentConfig = {
-  baseUrl: 'http://ibm-techxchange.sirioncloud.io:8000',
+  baseUrl: 'https://ibm-techxchange.sirioncloud.io',
   apiKey: '',
-  agentSlug: 'trade-finance-risk-analyzer-1-1',
+  agentSlug: 'trade-finance-risk-analyzer-2',
 };
 
 const SUGGESTIONS = [
@@ -46,6 +46,7 @@ export default function App() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [file, setFile] = useState<File | null>(null);
+  const [uploadedFileId, setUploadedFileId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [sessionId] = useState(makeSessionId);
@@ -82,14 +83,25 @@ export default function App() {
 
     try {
       let fileId: string | undefined;
-      if (file) fileId = await uploadFile(config, file);
+      if (file) {
+        fileId = await uploadFile(config, file);
+        setUploadedFileId(fileId);
+        setFile(null);              // clear the file chip after upload
+      } else if (uploadedFileId) {
+        fileId = uploadedFileId;    // reuse already-uploaded file ID on follow-ups
+      }
 
       const rawResponse = await sendMessage(config, [...messages, userMsg], sessionId, fileId);
       const parsed = parseAgentResponse(rawResponse);
 
       const assistantMsg: Message = {
         id: makeId(), role: 'assistant',
-        content: rawResponse, timestamp: new Date(), parsed,
+        // Store only the text content for history — not the raw JSON blob.
+        // Sending the full JSON back to agentOS on follow-ups causes 500 errors.
+        content: parsed.type === 'structured'
+          ? (parsed.raw ?? 'Risk analysis complete.')
+          : (parsed.raw ?? rawResponse),
+        timestamp: new Date(), parsed,
       };
       setMessages((prev) => [...prev, assistantMsg]);
 
@@ -105,14 +117,14 @@ export default function App() {
     } finally {
       setLoading(false);
     }
-  }, [input, config, file, messages, sessionId]);
+  }, [input, config, file, uploadedFileId, messages, sessionId]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); }
   };
 
   const clearConversation = () => {
-    setMessages([]); setFile(null); setError(null);
+    setMessages([]); setFile(null); setUploadedFileId(null); setError(null);
     setInput(''); setPanelOpen(false); setActiveResult(null);
   };
 
@@ -152,8 +164,8 @@ export default function App() {
       {/* ── IBM Carbon Header ──────────────────────────────────── */}
       <Header aria-label="Contract Lifecycle Management">
         <SkipToContent />
-        <HeaderName href="#" prefix="IBM">
-          Contract Lifecycle Management
+        <HeaderName href="#" prefix="IBMSirion Vault">
+          Trade Finance
         </HeaderName>
         <HeaderGlobalBar>
           <HeaderGlobalAction
@@ -212,14 +224,37 @@ export default function App() {
               {/* Welcome state */}
               {messages.length === 0 && (
                 <div className="clm-welcome">
-                  <div className="clm-welcome-logo">
-                    <Bot size={28} color="white" />
+
+                  {/* Dummy hero banner — CSS gradient + inline SVG, no real bank images */}
+                  <div className="clm-hero-banner">
+                    <div className="clm-hero-left">
+                      <div className="clm-hero-bank-name">IBMSirion Vault Bank</div>
+                      <div className="clm-hero-tagline">Trusted Since 1892</div>
+                    </div>
+                    {/* Inline SVG building silhouette — purely decorative dummy art */}
+                    <svg className="clm-hero-icon" width="80" height="90" viewBox="0 0 80 90" fill="none" aria-hidden="true">
+                      <rect x="30" y="10" width="20" height="70" fill="white"/>
+                      <rect x="10" y="25" width="60" height="55" fill="white"/>
+                      <rect x="0" y="75" width="80" height="5" fill="white"/>
+                      <rect x="35" y="55" width="10" height="20" fill="#0a1628"/>
+                      <rect x="15" y="35" width="10" height="12" fill="#0a1628"/>
+                      <rect x="55" y="35" width="10" height="12" fill="#0a1628"/>
+                      <rect x="15" y="52" width="10" height="12" fill="#0a1628"/>
+                      <rect x="55" y="52" width="10" height="12" fill="#0a1628"/>
+                      <polygon points="20,25 40,8 60,25" fill="white"/>
+                      <rect x="37" y="2" width="6" height="10" fill="#c9a84c"/>
+                    </svg>
                   </div>
-                  <h1 className="clm-welcome-title">Trade Finance Risk Analyzer</h1>
+
+                  <div className="clm-welcome-logo">
+                    <Bot size={26} color="#c9a84c" />
+                  </div>
+                  <h1 className="clm-welcome-title">Contract Risk Analyzer</h1>
                   <p className="clm-welcome-sub">
-                    Upload a contract, ask a question and get an AI-powered
-                    Red–Amber–Green risk review with full drill-down detail.
+                    Upload a trade finance contract, ask a question and receive an
+                    AI-powered Red–Amber–Green risk review with full drill-down detail.
                   </p>
+                  <hr className="clm-welcome-divider" />
                   <div className="clm-suggestion-grid">
                     {SUGGESTIONS.map((s) => (
                       <button
