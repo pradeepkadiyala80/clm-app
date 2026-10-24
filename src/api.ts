@@ -15,7 +15,10 @@ export async function uploadFile(config: AgentConfig, file: File): Promise<strin
 
   const res = await fetch('/api/upload', {
     method: 'POST',
-    headers: { Authorization: `Bearer ${config.apiKey}` },
+    headers: {
+      Authorization: `Bearer ${config.apiKey}`,
+      'X-Agentos-Base-Url': config.baseUrl,
+    },
     body: form,
   });
 
@@ -59,6 +62,7 @@ export async function sendMessage(
       Authorization: `Bearer ${config.apiKey}`,
       'Content-Type': 'application/json',
       'X-Session-Id': sessionId,
+      'X-Agentos-Base-Url': config.baseUrl,
     },
     body: JSON.stringify({
       model: `agent:${config.agentSlug}`,

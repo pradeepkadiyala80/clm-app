@@ -62,6 +62,7 @@ async function extractFileFromMultipart(
 app.post('/api/upload', async (req: Request, res: Response) => {
   const contentType = req.headers['content-type'];
   const auth = req.headers['authorization'];
+  const agentOs = ((req.headers['x-agentos-base-url'] as string) || AGENTOS).replace(/\/$/, '');
 
   if (!auth) { res.status(401).json({ error: 'Missing Authorization header' }); return; }
   if (!contentType?.startsWith('multipart/form-data')) {
@@ -93,7 +94,7 @@ app.post('/api/upload', async (req: Request, res: Response) => {
       const partHeader = `--${boundary}\r\nContent-Disposition: form-data; name="file"; filename="${filename}"\r\nContent-Type: ${mime}\r\n\r\n`;
       const partFooter = `\r\n--${boundary}--\r\n`;
       const body = Buffer.concat([Buffer.from(partHeader), chunk, Buffer.from(partFooter)]);
-      const up = await fetch(`${AGENTOS}/agentos/api/files/upload`, {
+      const up = await fetch(`${agentOs}/agentos/api/files/upload`, {
         method: 'POST',
         headers: {
           Authorization: auth!,
@@ -151,6 +152,7 @@ app.post('/api/upload', async (req: Request, res: Response) => {
 app.post('/api/chat/:slug', express.json({ limit: '50mb' }), async (req: Request, res: Response) => {
   const auth = req.headers['authorization'];
   const sessionId = req.headers['x-session-id'] as string | undefined;
+  const agentOs = ((req.headers['x-agentos-base-url'] as string) || AGENTOS).replace(/\/$/, '');
   const { slug } = req.params;
 
   if (!auth) { res.status(401).json({ error: 'Missing Authorization header' }); return; }
@@ -163,7 +165,7 @@ app.post('/api/chat/:slug', express.json({ limit: '50mb' }), async (req: Request
     if (sessionId) headers['X-Session-Id'] = sessionId;
 
     const upstream = await fetch(
-      `${AGENTOS}/agentos/api/chat-agents/${slug}/chat/completions`,
+      `${agentOs}/agentos/api/chat-agents/${slug}/chat/completions`,
       { method: 'POST', headers, body: JSON.stringify(req.body) }
     );
 

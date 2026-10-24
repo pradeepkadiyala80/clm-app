@@ -16,9 +16,9 @@ import './carbon.scss';
 import './App.scss';
 
 const INITIAL_CONFIG: AgentConfig = {
-  baseUrl: 'http://ibm-techxchange.sirioncloud.io:8000',
+  baseUrl: 'https://ibm-techxchange.sirioncloud.io',
   apiKey: '',
-  agentSlug: 'trade-finance-risk-analyzer-1-1',
+  agentSlug: 'trade-finance-risk-analyzer-2',
 };
 
 const SUGGESTIONS = [

@@ -57,9 +57,23 @@ html, body, #root {
 
   .cds--header__global .cds--btn--icon-only,
   .cds--header__action {
-    color: $bank-gray-40 !important;
-    &:hover { background: $bank-navy-80 !important; color: $bank-gold !important; }
-    &[aria-expanded="true"] { background: $bank-navy-80 !important; }
+    color: #ffffff !important;
+
+    svg {
+      fill: #ffffff !important;
+    }
+
+    &:hover {
+      background: $bank-navy-80 !important;
+      color: $bank-gold !important;
+      svg { fill: $bank-gold !important; }
+    }
+    &[aria-expanded="true"],
+    &.cds--header__action--active {
+      background: $bank-navy-80 !important;
+      color: #ffffff !important;
+      svg { fill: #ffffff !important; }
+    }
   }
 }
 
@@ -643,7 +657,18 @@ html, body, #root {
 
   .cds--btn--ghost {
     color: $bank-gold !important;
+    svg { fill: currentColor !important; }
     &:hover { background: rgba($bank-gold, 0.1) !important; }
+
+    &.cds--btn--icon-only {
+      color: #ffffff !important;
+      svg { fill: #ffffff !important; }
+      &:hover {
+        background: $bank-navy-80 !important;
+        color: $bank-gold !important;
+        svg { fill: $bank-gold !important; }
+      }
+    }
   }
 }
 
@@ -966,7 +991,18 @@ html, body, #root {
 
   .cds--btn--ghost {
     color: $bank-gold !important;
+    svg { fill: currentColor !important; }
     &:hover { background: rgba($bank-gold, 0.1) !important; }
+
+    &.cds--btn--icon-only {
+      color: #ffffff !important;
+      svg { fill: #ffffff !important; }
+      &:hover {
+        background: $bank-navy-80 !important;
+        color: $bank-gold !important;
+        svg { fill: $bank-gold !important; }
+      }
+    }
   }
 }
 
